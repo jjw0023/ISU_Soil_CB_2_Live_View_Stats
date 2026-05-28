@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Topsoil Thickness NumViews</title>
+  <style>
+    body {
+      font-family: Calibri, Arial, sans-serif;
+      background: #ffffff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .card {
+      background: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      text-align: center;
+      width: 220px;
+    }
+
+    .label {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 5px;
+    }
+
+    .value {
+      font-size: 28px;
+      font-weight: bold;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="label">Topsoil Thickness post-2007</div>
+      <div id="numViews1" class="value">Loading...</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Topsoil Thickness pre-1989</div>
+      <div id="numViews2" class="value">Loading...</div>
+    </div>
+
+    <div class="card">
+      <div class="label">Difference btw Topsoil Thickness</div>
+      <div id="numViews3" class="value">Loading...</div>
+    </div>
+  </div>
+
+  <script>
+    const groups = [
+      {
+        elementId: "numViews1",
+        ids: [
+          "8b20a11a608a4785be28ea41a45ca4d1",
+          "2548bf7f798a444fb0047df734d9de58"
+        ]
+      },
+      {
+        elementId: "numViews2",
+        ids: [
+          "795e09e2f6484f319baf337674f4ece1",
+          "45926953fe3a44b0a8ce1ec7df1e4f42"
+        ]
+      },
+      {
+        elementId: "numViews3",
+        ids: [
+          "1ad81e3db76745cdaa9195dc5839b50c",
+          "0a9140bfd1ce4e6dacfb198ae0ff396d"
+        ]
+      }
+    ];
+
+    function fetchNumViews(id) {
+      const url = `https://enterprise.rsgis.msu.edu/portal/sharing/rest/content/items/${id}?f=json`;
+      return fetch(url)
+        .then(res => res.json())
+        .then(data => data.numViews || 0)
+        .catch(() => 0);
+    }
+
+    groups.forEach(group => {
+      Promise.all(group.ids.map(fetchNumViews))
+        .then(values => {
+          const sum = values.reduce((a, b) => a + b, 0);
+          document.getElementById(group.elementId).textContent = sum.toLocaleString();
+        })
+        .catch(err => {
+          document.getElementById(group.elementId).textContent = "Error";
+          console.error(err);
+        });
+    });
+  </script>
+</body>
+</html>
