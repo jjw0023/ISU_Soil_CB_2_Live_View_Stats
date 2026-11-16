@@ -63,29 +63,32 @@
   </div>
 
   <script>
-    const groups = [
-      {
-        elementId: "numViews1",
-        ids: [
-          "8b20a11a608a4785be28ea41a45ca4d1",
-          "2548bf7f798a444fb0047df734d9de58"
-        ]
-      },
-      {
-        elementId: "numViews2",
-        ids: [
-          "795e09e2f6484f319baf337674f4ece1",
-          "45926953fe3a44b0a8ce1ec7df1e4f42"
-        ]
-      },
-      {
-        elementId: "numViews3",
-        ids: [
-          "1ad81e3db76745cdaa9195dc5839b50c",
-          "0a9140bfd1ce4e6dacfb198ae0ff396d"
-        ]
-      }
-    ];
+const groups = [
+  {
+    elementId: "numViews1",
+    subtract: 16198,
+    ids: [
+      "8b20a11a608a4785be28ea41a45ca4d1",
+      "2548bf7f798a444fb0047df734d9de58"
+    ]
+  },
+  {
+    elementId: "numViews2",
+    subtract: 16196,
+    ids: [
+      "795e09e2f6484f319baf337674f4ece1",
+      "45926953fe3a44b0a8ce1ec7df1e4f42"
+    ]
+  },
+  {
+    elementId: "numViews3",
+    subtract: 16200,
+    ids: [
+      "1ad81e3db76745cdaa9195dc5839b50c",
+      "0a9140bfd1ce4e6dacfb198ae0ff396d"
+    ]
+  }
+];
 
     function fetchNumViews(id) {
       const url = `https://enterprise.rsgis.msu.edu/portal/sharing/rest/content/items/${id}?f=json`;
@@ -97,10 +100,14 @@
 
     groups.forEach(group => {
       Promise.all(group.ids.map(fetchNumViews))
-        .then(values => {
-          const sum = values.reduce((a, b) => a + b, 0);
-          document.getElementById(group.elementId).textContent = sum.toLocaleString();
-        })
+.then(values => {
+  const sum = values.reduce((a, b) => a + b, 0);
+  const adjustedSum = sum - group.subtract;
+
+  document.getElementById(group.elementId).textContent =
+    adjustedSum.toLocaleString();
+})
+
         .catch(err => {
           document.getElementById(group.elementId).textContent = "Error";
           console.error(err);
